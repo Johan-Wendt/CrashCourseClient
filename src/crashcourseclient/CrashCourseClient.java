@@ -14,16 +14,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
 
 /**
  *
@@ -41,11 +48,18 @@ public class CrashCourseClient extends Application implements Constants{
     private HashMap<Integer, Rectangle> lifeMeters = new HashMap<>(); 
 
     private AudioHandler audiohandler;
+    
+    private boolean enteredIP = false;
+    
+    private String IP;
 
     @Override
     public void start(Stage primaryStage) {
         loadImages();
         setTheStage(primaryStage);
+        
+        MissingTextPrompt(primaryStage);
+        //promptForIP();
         createEventHandling();
         connectToServer();
         
@@ -134,7 +148,7 @@ public class CrashCourseClient extends Application implements Constants{
     * */
     private void connectToServer() {
         try {
-            Socket socket = new Socket("192.168.0.15", SOCKET);
+            Socket socket = new Socket(IP, SOCKET);
             
             fromServer = new DataInputStream(socket.getInputStream());
             
@@ -344,5 +358,56 @@ public class CrashCourseClient extends Application implements Constants{
             Logger.getLogger(CrashCourseClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         return byteArrayToInt(input);
+    }
+
+    private void promptForIP() {
+        TextField textField = new TextField();
+        textField.setPromptText("Enter host IP");
+        
+        root.getChildren().add(textField);
+        
+        IP = textField.getText();
+        
+        
+        textField.setOnKeyPressed(e -> {
+            if(e.getCharacter().equals(KeyCode.ENTER)) {
+                setEnteredIP();
+            }
+        });
+    }
+    private void setEnteredIP() {
+        enteredIP = true;
+    }
+    
+    private void MissingTextPrompt(Window owner) {
+      final Stage dialog = new Stage();
+
+      dialog.setTitle("Enter host IP");
+      dialog.initOwner(owner);
+      dialog.initStyle(StageStyle.UTILITY);
+      dialog.initModality(Modality.WINDOW_MODAL);
+      dialog.setX(owner.getX() + owner.getWidth() / 2);
+      dialog.setY(owner.getY() + owner.getHeight() / 2);
+
+      final TextField textField = new TextField();
+      final Button submitButton = new Button("Submit");
+      submitButton.setDefaultButton(true);
+      submitButton.setOnAction(e -> {
+          dialog.close();
+      });
+      textField.setMinHeight(TextField.USE_PREF_SIZE);
+
+      final VBox layout = new VBox(10);
+      layout.setAlignment(Pos.CENTER_RIGHT);
+      layout.setStyle("-fx-background-color: azure; -fx-padding: 10;");
+      layout.getChildren().setAll(
+        textField, 
+        submitButton
+      );
+
+      dialog.setScene(new Scene(layout));
+      dialog.showAndWait();
+
+      IP = textField.getText();
     }
 }
