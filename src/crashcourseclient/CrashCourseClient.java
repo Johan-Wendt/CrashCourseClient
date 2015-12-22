@@ -148,7 +148,13 @@ public class CrashCourseClient extends Application implements Constants{
     * */
     private void connectToServer() {
         try {
-            Socket socket = new Socket(IP, SOCKET);
+            Socket tempSocket = new Socket(IP, SOCKET);
+            
+            DataInputStream fromServerTemp = new DataInputStream(tempSocket.getInputStream());
+            
+            int newSocket = fromServerTemp.readInt();
+            
+            Socket socket = new Socket(IP, newSocket);
             
             fromServer = new DataInputStream(socket.getInputStream());
             
@@ -360,21 +366,6 @@ public class CrashCourseClient extends Application implements Constants{
         return byteArrayToInt(input);
     }
 
-    private void promptForIP() {
-        TextField textField = new TextField();
-        textField.setPromptText("Enter host IP");
-        
-        root.getChildren().add(textField);
-        
-        IP = textField.getText();
-        
-        
-        textField.setOnKeyPressed(e -> {
-            if(e.getCharacter().equals(KeyCode.ENTER)) {
-                setEnteredIP();
-            }
-        });
-    }
     private void setEnteredIP() {
         enteredIP = true;
     }
