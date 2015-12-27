@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -31,6 +32,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -101,7 +103,7 @@ public class CrashCourseClient extends Application implements Constants{
                     toServer.write(PLAYER_INPUT_LEFT_PRESSED);
                 }
                 if(e.getCode().equals(KeyCode.R)) {
-             //       reStart();
+                    reStart();
                 }
             }
             catch (IOException ex) {
@@ -130,22 +132,13 @@ public class CrashCourseClient extends Application implements Constants{
     }
  
     private void reStart() {
-      //  ObjectHandler.resetAllObjects();
-    //    trackBuilder.buildStandardTrack();
-    //    createPlayers();
-      //  setPlayerStartControls();
+        try {
+            toServer.write(PLAYER_INPUT_RESTART);
+        } catch (IOException ex) {
+            Logger.getLogger(CrashCourseClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    private void createPlayers() {
-        //CrashCourse crashCourse, VisibleObjects deatils, Players playerDetails, int xLocation, int yLocation, int startSpeed
-    //    playerOne = new Player(VisibleObjects.PLAYER_ONE, Players.PLAYER_ONE);
-     //   playerTwo = new Player(VisibleObjects.PLAYER_TWO, Players.PLAYER_TWO);
-    }
-    /**
-    private void setPlayerStartControls() {
-        playerOne.setControls(KeyCode.UP, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN);
-        playerTwo.setControls(KeyCode.W, KeyCode.D, KeyCode.A, KeyCode.S);
-    }
-    * */
+
     private void connectToServer() {
         try {
             Socket tempSocket = new Socket(IP, SOCKET);
@@ -172,7 +165,7 @@ public class CrashCourseClient extends Application implements Constants{
                 try {
                     int takeAction = fromServer.readByte();
                     
-                    System.out.println("takeAction: " + takeAction);
+                   // System.out.println("takeAction: " + takeAction);
                     if(takeAction == ACTION_CREATE_NEW) {
                         loadNewObjects();
                     }

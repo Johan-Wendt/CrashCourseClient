@@ -172,7 +172,7 @@ public class CrashCourseClient extends Application implements Constants{
                 try {
                     int takeAction = fromServer.readByte();
                     
-                    System.out.println("takeAction: " + takeAction);
+                   // System.out.println("takeAction: " + takeAction);
                     if(takeAction == ACTION_CREATE_NEW) {
                         loadNewObjects();
                     }
@@ -353,6 +353,8 @@ public class CrashCourseClient extends Application implements Constants{
         try {
             int audioNumber = fromServer.readByte();
             int volume = fromServer.readByte();
+            System.out.println("audionumber: " + audioNumber);
+            System.out.println("volume: " + volume);
             audiohandler.playSound(audioNumber, volume);
         } catch (IOException ex) {
             Logger.getLogger(CrashCourseClient.class.getName()).log(Level.SEVERE, null, ex);
